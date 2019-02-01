@@ -19,7 +19,7 @@ UART_Setup
     return
 
 UART_Transmit_Message	    ; Message stored at FSR2, length stored in W
-    movwf   UART_counter
+    movwf   UART_counter	
 UART_Loop_message
     movf    POSTINC2, W
     call    UART_Transmit_Byte
