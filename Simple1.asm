@@ -3,6 +3,10 @@
 	extern	UART_Setup, UART_Transmit_Message  ; external UART subroutines
 	extern  LCD_Setup, LCD_Write_Message, LCD_clear, LCD_nextline	    ; external LCD subroutines
 	extern	pad_setup, pad_read
+	extern	UART_Setup, UART_Transmit_Message   ; external UART subroutines
+	extern  LCD_Setup, LCD_Write_Message	    ; external LCD subroutines
+	extern	LCD_Write_Hex			    ; external LCD subroutines
+	extern  ADC_Setup, ADC_Read		    ; external ADC routines
 	
 acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
@@ -25,6 +29,7 @@ setup	bcf	EECON1, CFGS	; point to Flash program memory
 	bsf	EECON1, EEPGD 	; access Flash program memory
 	call	UART_Setup	; setup UART
 	call	LCD_Setup	; setup LCD
+	call	ADC_Setup	; setup ADC
 	goto	start
 	
 	; ******* Main programme ****************************************
@@ -61,6 +66,14 @@ loop_pread
 	call	pad_read
 
 	goto	loop_pread		; goto current line in code
+	
+measure_loop
+	call	ADC_Read
+	movf	ADRESH,W
+	call	LCD_Write_Hex
+	movf	ADRESL,W
+	call	LCD_Write_Hex
+	goto	measure_loop		; goto current line in code
 
 	; a delay subroutine if you need one, times around loop in delay_count
 delay	decfsz	delay_count	; decrement until zero
