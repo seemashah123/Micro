@@ -32,8 +32,8 @@ pad_read
 	;FB73
 	movlw	0x0F ;sets columns as inputs
 	movwf	TRISE, ACCESS
-	movlw   .1
-	call	lcdlp2
+	movlw   .1 ;delay
+	call	lcdlp2 ;delay
 	movlw	0xFF
 	movwf	PORTE
 	movff	PORTE, column
