@@ -1,40 +1,58 @@
 #include p18f87k22.inc
 	
-	global	random
-	extern	LCD_Write_Message
+    global	random
+    extern	LCD_Write_Message
+    extern	chosenWord
 
-
-pdata	code	
+ 
+wdata	code	
 words	data	"IN", "AT", "BE"
 	constant words_l = .3	
-	constant counter = .2 ;word_l minus 1
-pad	code
+	constant counter2 = .2 ;word_l minus 1
 
-main	code
+
+cwords	code
 	
 random	
-	;----checks if button is pressed, breaks loops if it is
-	bsf	PORTC, 1
-	nop
-	BTFSC	PORTC, 1 ;skips next instruction if pin 1 is '0'
-	break
-	;----
-	decfsz	couter ;decreases counter by 1 and skips next instruction if zero
-	bra	setcounter
 	
-	movf	words+counter, w
-	movwf	FSR2L
-	movlw	0x00
-	movwf	FSR2H
+	
+	
+	
+	dcfsnz	counter2 ;decreases counter by 1 and skips next instruction if zero
+	goto	setcounter	
+	
+	; alt method
+	movlw	0x02 ;sets columns as inputs
+	movwf	TRISC, ACCESS
+	nop
+	nop
+	nop
+	nop
+	movlw	0x02
+	movwf	PORTC
+	
+	;----checks if button is pressed, breaks loops if it is
+	;bsf	PORTC, 1
+	;nop
+	;nop
+	BTFSC	PORTC, 1 ;skips next instruction if pin 1 is '0'
+	goto	random
+	;----
+	
+	
+	; write word to LCD
+	movf	counter2, w
+	mullw	2 ; multiplies counter in w by 2
+	movwf	counter2 ; moves new counter (double) back to counter
+	
+	movlw	words_l+counter2
+	lfsr	FSR2, chosenWord
 	movlw	.2
 	call	LCD_Write_Message
-		
-	movlw	.2
-	
 	return
 setcounter ;sets counter to 2
 	movlw	.2
-	movwf	counter
+	movwf	counter2
 	goto	random
 	
 	
@@ -59,7 +77,7 @@ setcounter ;sets counter to 2
 	;movlw	"E"
 	;clrf	POSTINC0, f
 ;
-	
+	end
 	
 	
 	

@@ -8,13 +8,14 @@
 	extern	LCD_Write_Hex			    ; external LCD subroutines
 	extern  ADC_Setup, ADC_Read		    ; external ADC routines
 	extern	random				    ; external wordsDatabase 
-	
+	global	chosenWord
 acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
 delay_count res 1   ; reserve one byte for counter in the delay routine
 
 tables	udata	0x400    ; reserve data anywhere in RAM (here at 0x400)
 myArray res 0x80    ; reserve 128 bytes for message data
+chosenWord res 0x80
 
 rst	code	0    ; reset vector
 	goto	setup
@@ -57,17 +58,17 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	UART_Transmit_Message
 	;call	LCD_clear
 	
-	call	LCD_nextline
-	movlw	myTable_l-1	; output message to LCD (leave out "\n")
-	lfsr	FSR2, myArray
-	call	LCD_Write_Message
+	;call	LCD_nextline
+	;movlw	myTable_l-1	; output message to LCD (leave out "\n")
+	;lfsr	FSR2, myArray
+	;call	LCD_Write_Message
 	
-	call	pad_setup
+	;call	pad_setup
 	call	random
-loop_pread	
-	call	pad_read
+;loop_pread	
+	;call	pad_read
 
-	goto	loop_pread		; goto current line in code
+	;goto	loop_pread		; goto current line in code
 	
 measure_loop
 	call	ADC_Read
