@@ -7,6 +7,7 @@
 	extern  LCD_Setup, LCD_Write_Message	    ; external LCD subroutines
 	extern	LCD_Write_Hex			    ; external LCD subroutines
 	extern  ADC_Setup, ADC_Read		    ; external ADC routines
+	extern	random				    ; external wordsDatabase 
 	
 acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
@@ -20,8 +21,8 @@ rst	code	0    ; reset vector
 
 pdata	code    ; a section of programme memory for storing data
 	; ******* myTable, data in programme memory, and its length *****
-myTable data	    "choo choo\n"	; message, plus carriage return
-	constant    myTable_l=.10	; length of data
+myTable data	    "__\n"	; message, plus carriage return
+	constant    myTable_l=.3	; length of data
 	
 main	code
 	; ******* Programme FLASH read Setup Code ***********************
@@ -62,6 +63,7 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	LCD_Write_Message
 	
 	call	pad_setup
+	call	random
 loop_pread	
 	call	pad_read
 

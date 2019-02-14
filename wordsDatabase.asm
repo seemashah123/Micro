@@ -1,13 +1,13 @@
 #include p18f87k22.inc
 	
-	global	
-	extern	words
+	global	random
+	extern	LCD_Write_Message
 
 
 pdata	code	
 words	data	"IN", "AT", "BE"
 	constant words_l = .3	
-	constant counter = .2
+	constant counter = .2 ;word_l minus 1
 pad	code
 
 main	code
@@ -22,6 +22,16 @@ random
 	decfsz	couter ;decreases counter by 1 and skips next instruction if zero
 	bra	setcounter
 	
+	movf	words+counter, w
+	movwf	FSR2L
+	movlw	0x00
+	movwf	FSR2H
+	movlw	.2
+	call	LCD_Write_Message
+		
+	movlw	.2
+	
+	return
 setcounter ;sets counter to 2
 	movlw	.2
 	movwf	counter
