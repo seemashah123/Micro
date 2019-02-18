@@ -1,6 +1,6 @@
 
 #include p18f87k22.inc
-	global	pad_setup, pad_read
+	global	pad_read, pad_setup, column
 	extern	lcdlp2, LCD_Write_Message
 
 acs0    udata_acs   ; named variables in access ram
@@ -11,24 +11,27 @@ pad	code
 
 table
 	banksel .2
-	movlw	"F"
+	movlw	"A"
 	movwf	0x11, BANKED
 	
-	movlw	"E"
-	movwf	0x21, BANKED
+	movlw	"B"
+	movwf	0x12, BANKED
+	
+	
 	return
 	
 	;keep inputting letters and their addresses into table??
 	
 pad_setup
-	banksel .15 ;found this 15 using the data sheet, to find with 'file register' it is in?
+	banksel .15 ;found this 15 using the data sheet, to find which 'file register' it is in?
 	bsf	PADCFG1,REPU,BANKED
 	clrf	LATE
-	
 	call	table
 	return
 
 pad_read
+	movlw	0x00 
+	movwf	column
 	;FB73
 	movlw	0x0F ;sets columns as inputs
 	movwf	TRISE, ACCESS
@@ -64,9 +67,7 @@ pad_read
 	;lfsr	2, w
 	movlw	.1
 	
-	call	LCD_Write_Message
-	
-	
+	;call	LCD_Write_Message
 	
 	
 	;have changed every port H to port E
