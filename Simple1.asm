@@ -79,7 +79,7 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	;call	random
 	movlw .1
 	movwf counter2
-lightLED
+lightLED ;seema
 	; light lED of current player
 	;CPFSEQ for each 1,2,3,4
 	
@@ -116,14 +116,14 @@ find_letter ; length of word is 2 for now -> need to make this a constant but is
 	goto	found
 	
 
-found ; code if letter isn't in word
+found ; code if letter isn't in word ;joe
 	; goto code to add letter to display
 	movlw	.1
 	addwf	POSTINC2 ; adds 1 to current score
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	lfsr	FSR2, score
-notfound ;code if letter isn't in word
+notfound ;code if letter isn't in word ;joe
 	;code to sound buzzer 
 	;---
 	movlw	.0
@@ -132,7 +132,7 @@ notfound ;code if letter isn't in word
 	CPFSLT	player ; skips if f < 4
 	lfsr	FSR2, score
 
-;endofgame
+;endofgame ;seema
 	;show which player wins and reset, flash LED of winning player
 	;check highest player 
 	end
