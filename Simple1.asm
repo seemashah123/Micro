@@ -1,24 +1,22 @@
 	#include p18f87k22.inc
 
-	extern	UART_Setup, UART_Transmit_Message  ; external UART subroutines
 	extern  LCD_Setup, LCD_Write_Message, LCD_clear, LCD_nextline	    ; external LCD subroutines
 	extern	pad_setup, pad_read
-	extern	UART_Setup, UART_Transmit_Message   ; external UART subroutines
 	extern  LCD_Setup, LCD_Write_Message	    ; external LCD subroutines
 	extern	LCD_Write_Hex			    ; external LCD subroutines
-	extern  ADC_Setup, ADC_Read		    ; external ADC routines
 	extern	random				    ; external wordsDatabase 
-	extern	column
-	global	chosenWord, wordsList, counter
+	extern	column, fit
+	global	wordsList, counter
 	global	counter2
 	
 acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
 counter2    res 1
 delay_count res 1   ; reserve one byte for counter in the delay routine
-score	    res 4
-player	    res 1
-letterPos res 1
+score	    res 4   ;scores of the four players
+player	    res 1   ;current player number
+letterPos   res 1   ;position in word currently at
+letter	    res 1   ;current letter in whole word being compared against
 
 
 tables	    udata 0x400    ; reserve data anywhere in RAM (here at 0x400)
@@ -39,9 +37,7 @@ main	code
 	; ******* Programme FLASH read Setup Code ***********************
 setup	bcf	EECON1, CFGS	; point to Flash program memory  
 	bsf	EECON1, EEPGD 	; access Flash program memory
-	;call	UART_Setup	; setup UART
 	call	LCD_Setup	; setup LCD
-	;call	ADC_Setup	; setup ADC
 	movlw 0
 	goto	start
 	
@@ -73,26 +69,24 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	lfsr	FSR2, myArray
 	call	LCD_Write_Message
 	;--------------
-	
-	;movlw	myTable_l	; output message to UART
-	;lfsr	FSR2, myArray
-	;call	UART_Transmit_Message
-	
+		
 	;call	LCD_clear
-	
 	;call	LCD_nextline
-	;movlw	myTable_l-1	; output message to LCD (leave out "\n")
-	;lfsr	FSR2, myArray
-	;call	LCD_Write_Message
-	
 	;call	pad_setup
-	;
 	;goto	random
-loop_pread	
+	
+	call	fit
+	call	random
+	
+lightLED
+	; light lED of current player
+	;CPFSEQ for each 1,2,3,4
+	
+loop_pread ;loops until button on keypad is pressed goes to find_letter when button is pressed	
 	call	pad_read
 	TSTFSZ	column  ;skips next line if no key pressed on keypad
 	goto	find_letter
-	goto	loop_pread		; goto current line in code
+	goto	loop_pread  ; goto current line in code
 
 
 	; a delay subroutine if you need one, times around loop in delay_count
@@ -100,25 +94,27 @@ loop_pread
 	;bra delay
 	;return
 
-find_letter ;word AB
+find_letter ; length of word is 2 for now -> need to make this a constant but isn't working
 	movlw	.1
+	addwf	letterPos ;adds one to letterPos (initially 0)
+	movlw	.3
+	CPFSLT	letterPos ;if letter position is less than 3 skips next line
+	goto	notfound
+	lfsr	FSR0, wordsList ;moves address of wordsList to FSR0
+	
+	;add counter2 to letterPos and put in w
+	movlw	.0
+	addwf	counter2
 	addwf	letterPos
-	lfsr	FSR0, wordsList
+	;--
+	
+	movff	PLUSW0, letter ;gets the letter at position w in wordsList and puts in letter
 	movf	column, w
-	movf	PLUSW0, w    
-	CPFSEQ	wordsList  ;compares chosen letter with letter in word, skips if it is in word
+	CPFSEQ	letter  ;compares chosen letter with letter in word, skips if it is in word
 	goto	find_letter
 	goto	found
+	
 
-second_letter ;need to make this a loop later
-	movf	column, w
-	addlw	.1
-	movf	PLUSW0, w
-	CPFSEQ	wordsList
-	goto	notfound
-	goto	found
-	;words+counter2
-	;words+counter2+1
 found ; code if letter isn't in word
 	; goto code to add letter to display
 	movlw	.1
@@ -134,5 +130,8 @@ notfound ;code if letter isn't in word
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	lfsr	FSR2, score
-	 
+
+;endofgame
+	;show which player wins and reset, flash LED of winning player
+	;check highest player 
 	end

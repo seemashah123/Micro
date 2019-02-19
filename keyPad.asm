@@ -32,6 +32,7 @@ pad_setup
 pad_read
 	movlw	0x00 
 	movwf	column
+	
 	;FB73
 	movlw	0x0F ;sets columns as inputs
 	movwf	TRISE, ACCESS
