@@ -72,12 +72,13 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 		
 	;call	LCD_clear
 	;call	LCD_nextline
-	;call	pad_setup
+	call	pad_setup
 	;goto	random
 	
 	call	fit
-	call	random
-	
+	;call	random
+	movlw .1
+	movwf counter2
 lightLED
 	; light lED of current player
 	;CPFSEQ for each 1,2,3,4
@@ -85,7 +86,7 @@ lightLED
 loop_pread ;loops until button on keypad is pressed goes to find_letter when button is pressed	
 	call	pad_read
 	TSTFSZ	column  ;skips next line if no key pressed on keypad
-	goto	find_letter
+	goto	find_letter ; letter is in FSR1
 	goto	loop_pread  ; goto current line in code
 
 
@@ -104,12 +105,12 @@ find_letter ; length of word is 2 for now -> need to make this a constant but is
 	
 	;add counter2 to letterPos and put in w
 	movlw	.0
-	addwf	counter2
-	addwf	letterPos
+	addwf	counter2, 0
+	addwf	letterPos, 0
 	;--
 	
 	movff	PLUSW0, letter ;gets the letter at position w in wordsList and puts in letter
-	movf	column, w
+	movf	INDF1, w ;FSR1 is loaded with address of entered letter so moves this to w
 	CPFSEQ	letter  ;compares chosen letter with letter in word, skips if it is in word
 	goto	find_letter
 	goto	found

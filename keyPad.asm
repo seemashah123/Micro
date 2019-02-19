@@ -17,7 +17,6 @@ table
 	movlw	"B"
 	movwf	0x12, BANKED
 	
-	
 	return
 	
 	;keep inputting letters and their addresses into table??
@@ -62,9 +61,9 @@ pad_read
 	nop
 	movf	column, w
 	
-	movwf	FSR2L
+	movwf	FSR1L
 	movlw	0x00
-	movwf	FSR2H
+	movwf	FSR1H
 	;lfsr	2, w
 	movlw	.1
 	

@@ -7,9 +7,10 @@
 
 
 int_hi	code	0x0008 ; high vector, no low vector
-    btfss   INTCON,RBIF ; check that this is RBIF interrupt
+    btfss   INTCON,RBIE ; check that this is RBIF interrupt
     retfie  FAST ; if not then return
-    incf    LATD ; increment PORTD
+    ;incf    LATD ; increment PORTD
+    ;add code here to add one to counter and double it
     bcf	    INTCON,TMR0IF ; clear interrupt flag
     retfie  FAST ; fast return from interrupt
     return
@@ -47,8 +48,6 @@ setcounter ;sets counter to 2
 	movlw	.2
 	movwf	counter2
  	goto	randomloop
-
-	
 	
 	end	
 	
