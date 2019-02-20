@@ -17,6 +17,8 @@ table
 	movlw	"B"
 	movwf	0x12, BANKED
 	
+	movlw	"C"
+	movwf	0x14, BANKED
 	return
 	
 	;keep inputting letters and their addresses into table??
@@ -35,6 +37,8 @@ pad_read
 	;FB73
 	movlw	0x0F ;sets columns as inputs
 	movwf	TRISE, ACCESS
+	nop
+	nop
 	movlw   .1 ;delay
 	call	lcdlp2 ;delay
 	movlw	0xFF
@@ -44,6 +48,8 @@ pad_read
 	;CDEF
 	movlw	0xF0 ;sets rows as inputs
 	movwf	TRISE, ACCESS
+	nop
+	nop
 	movlw   .1
 	call	lcdlp2
 	movlw	0xFF

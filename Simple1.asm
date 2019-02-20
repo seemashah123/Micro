@@ -70,14 +70,14 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	LCD_Write_Message
 	;--------------
 		
-	;call	LCD_clear
+	
 	;call	LCD_nextline
 	call	pad_setup
 	;goto	random
 	
 	call	fit
 	;call	random
-	movlw .1
+	movlw .0
 	movwf counter2
 lightLED ;seema
 	; light lED of current player
@@ -106,7 +106,7 @@ find_letter ; length of word is 2 for now -> need to make this a constant but is
 	;add counter2 to letterPos and put in w
 	movlw	.0
 	addwf	counter2, 0
-	addwf	letterPos, 0
+	addwf	letterPos-1, 0
 	;--
 	
 	movff	PLUSW0, letter ;gets the letter at position w in wordsList and puts in letter
@@ -118,6 +118,14 @@ find_letter ; length of word is 2 for now -> need to make this a constant but is
 
 found ; code if letter isn't in word ;joe
 	; goto code to add letter to display
+	;need to add letter to myArray at position letterPos
+	call	LCD_clear
+	lfsr	FSR2, myArray
+	movf	letterPos-2, w
+	movff	letter, PLUSW2
+	movlw	myTable_l-1
+	call	LCD_Write_Message
+	;--
 	movlw	.1
 	addwf	POSTINC2 ; adds 1 to current score
 	movlw	.4
