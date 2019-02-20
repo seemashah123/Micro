@@ -116,7 +116,7 @@ find_letter ; length of word is 2 for now -> need to make this a constant but is
 	goto	found
 	
 
-found ; code if letter isn't in word ;joe
+found ; code if letter is in word ;joe
 	; goto code to add letter to display
 	;need to add letter to myArray at position letterPos
 	call	LCD_clear
@@ -131,6 +131,8 @@ found ; code if letter isn't in word ;joe
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	lfsr	FSR2, score
+	
+	;check if all letters in word have been found
 notfound ;code if letter isn't in word ;joe
 	;code to sound buzzer 
 	;---
@@ -139,7 +141,7 @@ notfound ;code if letter isn't in word ;joe
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	lfsr	FSR2, score
-
+	;loop to LED lighting part
 ;endofgame ;seema
 	;show which player wins and reset, flash LED of winning player
 	;check highest player 
