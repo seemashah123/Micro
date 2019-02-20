@@ -47,8 +47,7 @@ start 	movlw	.1
 	lfsr	FSR2, score 
 	movlw	.0
 	movwf	letterPos
-	
-	
+		
 	;write my table to myArray
 	lfsr	FSR0, myArray	; Load FSR0 with address in RAM	
 	movlw	upper(myTable)	; address of data in PM
@@ -141,7 +140,7 @@ notfound ;code if letter isn't in word ;joe
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	lfsr	FSR2, score
-	;loop to LED lighting part
+	;loop to LED lighting part ;seema
 ;endofgame ;seema
 	;show which player wins and reset, flash LED of winning player
 	;check highest player 
