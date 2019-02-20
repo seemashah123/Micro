@@ -11,7 +11,7 @@ int_hi	code	0x0008 ; high vector, no low vector ;joe
     retfie  FAST ; if not then return
     ;incf    LATD ; increment PORTD
     ;add code here to add one to counter and double it
-    bcf	    INTCON,TMR0IF ; clear interrupt flag
+    bcf	    INTCON,RBIF ; clear interrupt flag
     retfie  FAST ; fast return from interrupt
     return
 
