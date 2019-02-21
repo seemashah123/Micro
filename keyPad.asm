@@ -58,33 +58,51 @@ pad_setup
 	return
 
 pad_read
-	movlw	0x00 
+	movlw	0x00
 	movwf	column
-	movwf	row
+	
 	;FB73
-	movlw	0x0F ;sets columns as inputs
+	movlw	0x0F ;sets columns as inputs (0-3)
 	movwf	TRISE, ACCESS
-	movlw   .10 ;delay
+	movlw   .1 ;delay
 	call	lcdlp2 ;delay
 	movlw	0xFF
 	movwf	PORTE
+	movlw   .1 ;delay
+	call	lcdlp2 ;delay
 	movff	PORTE, column
 	
+	movlw	0xF0
+	CPFSEQ	column
+	goto	readrow
+	movlw	0x00
+	movwf	column
+	return
+	
 	;CDEF
+readrow	
 	movlw	0xF0 ;sets rows as inputs
 	movwf	TRISE, ACCESS
-	movlw   .10
-	call	lcdlp2
+	movlw   .1 ;delay
+	call	lcdlp2 ;delay
 	movlw	0xFF
 	movwf	PORTE
+	movlw   .1
+	call	lcdlp2
 	movff	PORTE, row 
 	
+	movlw	0x0F
+	CPFSEQ	row
+	goto	andcolrow
+	movlw	0x00
+	movwf	column
+	return
 	;movf	column, w
 	;andwf	row,w
 	;movwf	FSR2L
 	;movlw	.2
 	;movwf	FSR2H
-	
+andcolrow	
 	movf	row, w
 	ANDWF	column, 1, 0 ;puts in column location
 	nop
@@ -100,8 +118,6 @@ pad_read
 	
 	
 	;have changed every port H to port E
-
-	
 	
 	return
 
