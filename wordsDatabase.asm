@@ -13,7 +13,7 @@ int_hi	code	0x0008 ; high vector, no low vector ;joe
     ;add code here to add one to counter and double it
     bcf	    INTCON,RBIF ; clear interrupt flag
     retfie  FAST ; fast return from interrupt
-    return
+
 
     
 wdata	code
@@ -37,10 +37,15 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	bra	loop2		; keep going until finished
 	return
 random
-	bsf INTCON,RBIE ; Enable RBIE interrupt
+	bsf TRISB,TRISB5 
+	movf PORTB, W
+	nop
+	bcf INTCON,RBIF ; clear RBIF 
 	movlw	.2
 	movwf	counter2
 randomloop
+	btfsc	INTCON, RBIF
+	return
 	DECFSZ	counter2, 1 ;decreases counter by 1 and skips next instruction if zero
 	goto randomloop	
 	

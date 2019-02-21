@@ -75,9 +75,8 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	;goto	random
 	
 	call	fit
-	;call	random
-	movlw .0
-	movwf counter2
+	call	random
+	nop
 lightLED ;seema
 	; light lED of current player
 	;CPFSEQ for each 1,2,3,4
