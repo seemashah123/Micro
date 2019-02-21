@@ -19,6 +19,33 @@ table
 	
 	movlw	"C"
 	movwf	0x14, BANKED
+	
+	movlw	"D"
+	movwf	0x18, BANKED
+	
+	movlw	"E"
+	movwf	0x21, BANKED
+	
+	movlw	"F"
+	movwf	0x22, BANKED
+	
+	movlw	"G"
+	movwf	0x24, BANKED
+	
+	movlw	"H"
+	movwf	0x28, BANKED
+	
+	movlw	"I"
+	movwf	0x41, BANKED
+	
+	movlw	"J"
+	movwf	0x42, BANKED
+	
+	movlw	"K"
+	movwf	0x44, BANKED
+	
+;	movlw	"L"
+;	movwf	0x44, BANKED
 	return
 	
 	;keep inputting letters and their addresses into table??
@@ -33,13 +60,11 @@ pad_setup
 pad_read
 	movlw	0x00 
 	movwf	column
-	
+	movwf	row
 	;FB73
 	movlw	0x0F ;sets columns as inputs
 	movwf	TRISE, ACCESS
-	nop
-	nop
-	movlw   .1 ;delay
+	movlw   .10 ;delay
 	call	lcdlp2 ;delay
 	movlw	0xFF
 	movwf	PORTE
@@ -48,9 +73,7 @@ pad_read
 	;CDEF
 	movlw	0xF0 ;sets rows as inputs
 	movwf	TRISE, ACCESS
-	nop
-	nop
-	movlw   .1
+	movlw   .10
 	call	lcdlp2
 	movlw	0xFF
 	movwf	PORTE
