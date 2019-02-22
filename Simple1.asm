@@ -17,7 +17,7 @@ score	    res 4   ;scores of the four players
 player	    res 1   ;current player number
 letterPos   res 1   ;position in word currently at
 letter	    res 1   ;current letter in whole word being compared against
-
+word_len    res	1
 
 tables	    udata 0x400    ; reserve data anywhere in RAM (here at 0x400)
 myArray	    res 0x80    ; reserve 128 bytes for message data
@@ -46,7 +46,11 @@ setup	bcf	EECON1, CFGS	; point to Flash program memory
 	goto	start
 	
 	; ******* Main programme ****************************************
-start 	movlw	.10
+start 	
+	movlw	.2
+	movwf	word_len
+	
+	movlw	.10
 	movwf	myTable_l
 	movlw	.1
 	movwf	player
@@ -157,7 +161,8 @@ loop_pread ;loops until button on keypad is pressed goes to find_letter when but
 find_letter ; length of word is 2 for now -> need to make this a constant but isn't working
 	movlw	.1
 	addwf	letterPos ;adds one to letterPos (initially 0)
-	movlw	.3
+	movf	word_len, w
+	addlw	.1
 	CPFSLT	letterPos ;if letter position is less than 3 skips next line
 	goto	notfound
 	lfsr	FSR0, wordsList ;moves address of wordsList to FSR0
@@ -192,7 +197,8 @@ found ; code if letter is in word ;joe
 	lfsr	FSR2, score
 	
 	;check if all letters in word have been found
-notfound ;code if letter isn't in word ;joe
+notfound 
+	;code if letter isn't in word ;joe
 	;code to sound buzzer 
 	;---
 	movlw	.0
