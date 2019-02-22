@@ -78,6 +78,14 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	random
 	nop
 lightLED ;seema
+	TRISG 	0x00
+	PORTG	0x00
+	
+	movlw	00h
+	movwf	85h ;sets all pins in port g to output
+	
+loop_led 
+	
 	; light lED of current player
 	;CPFSEQ for each 1,2,3,4
 	
