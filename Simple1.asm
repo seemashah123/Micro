@@ -81,10 +81,23 @@ lightLED ;seema
 	TRISG 	0x00
 	PORTG	0x00
 	
-	movlw	00h
-	movwf	85h ;sets all pins in port g to output
+	movlw	0x0
+	movwf	TRISG, ACCESS ;port G all outputs
 	
 loop_led 
+	call 	lightLED
+	CPFSGT 	player, 1   ;checks player, if player 2,3,4 turn, skips next line
+	movlw 	01h 	;should switch pin 1 of port G on
+	CPFSGT 	player, 2
+	
+	CPFSEQ 	player, .3
+	CPFSEQ 	player, .4
+	
+	movlw 	01h 	;should switch pin 1 of port G on
+	goto 	start ;should go to wherever a player starts their turn , could be diff to 'start'
+	
+	
+	
 	
 	; light lED of current player
 	;CPFSEQ for each 1,2,3,4
@@ -148,7 +161,25 @@ notfound ;code if letter isn't in word ;joe
 	CPFSLT	player ; skips if f < 4
 	lfsr	FSR2, score
 	;loop to LED lighting part ;seema
-;endofgame ;seema
+	
+	
+loop_flashLED
+	CPFSEQ 	player ;dont know how to check which player won
+	movlw 	____ ; underscore shows which pin needs to be turned on corresponding to which player has won
+	movwf 	PORTG
+	nop 
+	nop
+	nop
+	nop
+	movlw 	0x00
+	movwf 	PORTG
+	bra loop_flashLED ;dont know how to make this stop ?
+	
+endofgame ;seema
+	CPFSLT 	score, 2
+	goto 	flashLED
+	
+	
 	;show which player wins and reset, flash LED of winning player
 	;check highest player 
 	end
