@@ -44,8 +44,20 @@ table
 	movlw	"K"
 	movwf	0x44, BANKED
 	
-;	movlw	"L"
-;	movwf	0x44, BANKED
+	movlw	"L"
+	movwf	0x48, BANKED
+	
+	movlw	"M"
+	movwf	0x81, BANKED
+	
+	movlw	"N"
+	movwf	0x82, BANKED
+	
+	movlw	"O"
+	movwf	0x84, BANKED
+	
+	movlw	"P"
+	movwf	0x88, BANKED
 	return
 	
 	;keep inputting letters and their addresses into table??

@@ -37,7 +37,7 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	bra	loop2		; keep going until finished
 	return
 random
-	bsf TRISB,TRISB5 
+	bsf TRISB,TRISB5
 	movf PORTB, W
 	nop
 	bcf INTCON,RBIF ; clear RBIF 

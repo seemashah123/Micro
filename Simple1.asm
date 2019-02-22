@@ -23,6 +23,7 @@ tables	    udata 0x400    ; reserve data anywhere in RAM (here at 0x400)
 myArray	    res 0x80    ; reserve 128 bytes for message data
 wordsList   res 0x80    ; reserve 128 bytes for message data
 tables2	    udata 0x500    ; reserve data anywhere in RAM (here at 0x500)
+myArray2    res 0x80    ; reserve 128 bytes for message data
 chosenWord  res 0x80
 
 rst	code	0    ; reset vector
@@ -32,6 +33,9 @@ pdata	code    ; a section of programme memory for storing data
 	; ******* myTable, data in programme memory, and its length *****
 myTable data	    "__\n"	; message, plus carriage return
 	constant    myTable_l=.3	; length of data
+myTable2 data	    "Press RB5\n"	; message, plus carriage return
+	constant    myTable2_l=.10	; length of data	
+
 	
 main	code
 	; ******* Programme FLASH read Setup Code ***********************
@@ -42,13 +46,15 @@ setup	bcf	EECON1, CFGS	; point to Flash program memory
 	goto	start
 	
 	; ******* Main programme ****************************************
-start 	movlw	.1
+start 	movlw	.10
+	movwf	myTable_l
+	movlw	.1
 	movwf	player
 	lfsr	FSR2, score 
 	movlw	.0
 	movwf	letterPos
 		
-	;write my table to myArray
+	; write my table to myArray
 	lfsr	FSR0, myArray	; Load FSR0 with address in RAM	
 	movlw	upper(myTable)	; address of data in PM
 	movwf	TBLPTRU		; load upper bits to TBLPTRU
@@ -63,52 +69,78 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	decfsz	counter		; count down to zero
 	bra	loop		; keep going until finished
 	;----------
+	
+		; write my table2 to myArray2
+	lfsr	FSR0, myArray2	; Load FSR0 with address in RAM	
+	movlw	upper(myTable2)	; address of data in PM
+	movwf	TBLPTRU		; load upper bits to TBLPTRU
+	movlw	high(myTable2)	; address of data in PM
+	movwf	TBLPTRH		; load high byte to TBLPTRH
+	movlw	low(myTable2)	; address of data in PM
+	movwf	TBLPTRL		; load low byte to TBLPTRL
+	movlw	myTable2_l	; bytes to read
+	movwf 	counter		; our counter register
+loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
+	movff	TABLAT, POSTINC0; move data from TABLAT to (FSR0), inc FSR0	
+	decfsz	counter		; count down to zero
+	bra	loop2		; keep going until finished
+	;----------
 	;writes myArray to LCD
-	movlw	myTable_l-1	; output message to LCD (leave out "\n")
-	lfsr	FSR2, myArray
+	call	LCD_clear
+	movlw	myTable2_l-1	; output message to LCD (leave out "\n")
+	lfsr	FSR2, myArray2
 	call	LCD_Write_Message
 	;--------------
 		
-	
 	;call	LCD_nextline
 	call	pad_setup
-	;goto	random
-	
 	call	fit
 	call	random
+	call	LCD_Setup
+	call	LCD_clear
+	movlw	myTable_l-1	; output message to LCD (leave out "\n")
+	lfsr	FSR2, myArray
+	call	LCD_Write_Message
 	nop
-lightLED ;seema
-;	TRISG 	0x00
-;	PORTG	0x00
+;lightLED ;seema
+;	movlw	0x00
+;	movwf	TRISG, ACCESS ;port G all outputs
+;	
+;checkLED1 
+;	call 	lightLED
+;	movlw	.1
+;	CPFSEQ 	player   ;check player, skips next line if player 1
+;	goto	checkLED2
+;	movlw 	0x01 	;should switch pin 1 of port G on
+;	movwf	PORTG
+;	;goto	loop_pread
+
+;checkLED2	
+;	call 	lightLED
+;	movlw	.2
+;	CPFSEQ 	player
+;	goto	checkLED3 
+;	movlw 	0x02 	;should switch pin 2 of port G on
+;	movwf	PORTG
+;	goto	loop_pread
+;	
+;checkLED3	
+;	call 	lightLED
+;	movlw	.3
+;	CPFSEQ 	player
+;	goto	checkLED4 
+;	movlw 	0x03 	;should switch pin 2 of port G on
+;	movwf	PORTG
+;	goto	loop_pread
 	
-	movlw	0x0
-	movwf	TRISG, ACCESS ;port G all outputs
-	
-loop_led 
-	;call 	lightLED
-	movlw	.4
-	CPFSEQ 	player   ;checks player, if player 2,3,4 turn, skips next line
-	;goto check player 2
-	;light LED 1
-	;goto pad bit
-check2	
-	movlw	.2
-	CPFSEQ 	player
-	movlw 	01h ;should switch pin 1 of port G on 
-	goto	___ ;
-	CPFSGT 	player, 
-	
-	CPFSEQ 	player, .3
-	CPFSEQ 	player, .4
-	
-	movlw 	01h 	;should switch pin 1 of port G on
-	 ;should go to wherever a player starts their turn , could be diff to 'start'
-	
-	
-	
-	
-	; light lED of current player
-	;CPFSEQ for each 1,2,3,4
+;checkLED4	
+;	call 	lightLED
+;	movlw	.4
+;	CPFSEQ 	player
+;	goto	checkLED1 ;this should loop back to LED 1 checking
+;	movlw 	0x04 	;should switch pin 4 of port G on
+;	movwf	PORTG
+;	goto	loop_pread
 	
 loop_pread ;loops until button on keypad is pressed goes to find_letter when button is pressed	
 	call	pad_read
@@ -171,26 +203,34 @@ notfound ;code if letter isn't in word ;joe
 	;loop to LED lighting part ;seema
 	
 	
-loop_flashLED
-	;load frs2
-	;go through with postinc checking the score with sompare
-	;then go to flashled
-	;put in if statement thingy that says if e.g. the 'second' address of fsr2 has the highest score then the second pin lights?? and similar for all the 4 players
+;loop_flashLED
+;	lfsr	score, FSR2 ;load fsr2 iwth score
+;	CPFSEQ	POSTINC2 ;go through with postinc checking the score with compare
+;	movlw	.1
+;	CPFSGT	score
+;	goto	score_p2
+	;flashled of 1
+;	
+;	;at the end of flashing player 1 go toplay 2 regardless and so on
+;	;then go to flashled
+;
+;	;put in if statement thingy that says if e.g. the 'second' address of fsr2 has the highest score then the second pin lights?? and similar for all the 4 players
+;	
+;	CPFSEQ 	player ;dont know how to check which player won
+;	movlw 	____ ; underscore shows which pin needs to be turned on corresponding to which player has won
+;	movwf 	PORTG
+;	nop 
+;	nop ;use lcd_delay for delays, call it
 	
-	CPFSEQ 	player ;dont know how to check which player won
-	movlw 	____ ; underscore shows which pin needs to be turned on corresponding to which player has won
-	movwf 	PORTG
-	nop 
-	nop
-	nop
-	nop
-	movlw 	0x00
-	movwf 	PORTG
-	bra loop_flashLED ;dont know how to make this stop ?
+;	nop
+;	nop
+;	movlw 	0x00
+;	movwf 	PORTG
+;	bra loop_flashLED ;dont know how to make this stop ?
 	
 endofgame ;seema
-	CPFSLT 	score, 2
-	goto 	loop_flashLED
+;	CPFSLT 	score, 2
+;	goto 	loop_flashLED
 	
 	
 	;show which player wins and reset, flash LED of winning player
