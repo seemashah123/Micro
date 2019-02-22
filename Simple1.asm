@@ -78,23 +78,31 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	random
 	nop
 lightLED ;seema
-	TRISG 	0x00
-	PORTG	0x00
+;	TRISG 	0x00
+;	PORTG	0x00
 	
 	movlw	0x0
 	movwf	TRISG, ACCESS ;port G all outputs
 	
 loop_led 
-	call 	lightLED
-	CPFSGT 	player, 1   ;checks player, if player 2,3,4 turn, skips next line
-	movlw 	01h 	;should switch pin 1 of port G on
-	CPFSGT 	player, 2
+	;call 	lightLED
+	movlw	.4
+	CPFSEQ 	player   ;checks player, if player 2,3,4 turn, skips next line
+	;goto check player 2
+	;light LED 1
+	;goto pad bit
+check2	
+	movlw	.2
+	CPFSEQ 	player
+	movlw 	01h ;should switch pin 1 of port G on 
+	goto	___ ;
+	CPFSGT 	player, 
 	
 	CPFSEQ 	player, .3
 	CPFSEQ 	player, .4
 	
 	movlw 	01h 	;should switch pin 1 of port G on
-	goto 	start ;should go to wherever a player starts their turn , could be diff to 'start'
+	 ;should go to wherever a player starts their turn , could be diff to 'start'
 	
 	
 	
@@ -164,6 +172,11 @@ notfound ;code if letter isn't in word ;joe
 	
 	
 loop_flashLED
+	;load frs2
+	;go through with postinc checking the score with sompare
+	;then go to flashled
+	;put in if statement thingy that says if e.g. the 'second' address of fsr2 has the highest score then the second pin lights?? and similar for all the 4 players
+	
 	CPFSEQ 	player ;dont know how to check which player won
 	movlw 	____ ; underscore shows which pin needs to be turned on corresponding to which player has won
 	movwf 	PORTG
@@ -177,7 +190,7 @@ loop_flashLED
 	
 endofgame ;seema
 	CPFSLT 	score, 2
-	goto 	flashLED
+	goto 	loop_flashLED
 	
 	
 	;show which player wins and reset, flash LED of winning player
