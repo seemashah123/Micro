@@ -1,6 +1,6 @@
 	#include p18f87k22.inc
 
-	extern  LCD_Setup, LCD_Write_Message, LCD_clear, LCD_nextline	    ; external LCD subroutines
+	extern  LCD_Setup, LCD_Write_Message, LCD_clear, LCD_nextline, LCD_delay_ms	    ; external LCD subroutines
 	extern	pad_setup, pad_read
 	extern  LCD_Setup, LCD_Write_Message	    ; external LCD subroutines
 	extern	LCD_Write_Hex			    ; external LCD subroutines
@@ -100,8 +100,14 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	pad_setup
 	call	fit
 	call	random
+	nop
+	nop
 	call	LCD_Setup
-	call	LCD_clear
+	nop
+	;call	LCD_clear
+	movlw	.100000
+	call	LCD_delay_ms
+	nop
 	movlw	myTable_l-1	; output message to LCD (leave out "\n")
 	lfsr	FSR2, myArray
 	call	LCD_Write_Message
@@ -146,9 +152,9 @@ loop_pread ;loops until button on keypad is pressed goes to find_letter when but
 
 
 	; a delay subroutine if you need one, times around loop in delay_count
-;delay	decfsz	delay_count	; decrement until zero
-	;bra delay
-	;return
+delay	decfsz	delay_count	; decrement until zero
+	bra delay
+	return
 
 find_letter ; length of word is 2 for now -> need to make this a constant but isn't working
 	movlw	.1
