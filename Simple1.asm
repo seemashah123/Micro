@@ -106,45 +106,37 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	lfsr	FSR2, myArray
 	call	LCD_Write_Message
 	nop
-;lightLED ;seema
-;	movlw	0x00
-;	movwf	TRISG, ACCESS ;port G all outputs
-;	
-;checkLED1 
-;	call 	lightLED
-;	movlw	.1
-;	CPFSEQ 	player   ;check player, skips next line if player 1
-;	goto	checkLED2
-;	movlw 	0x01 	;should switch pin 1 of port G on
-;	movwf	PORTG
-;	;goto	loop_pread
+lightLED ;seema
+	movlw	0x00
+	movwf	TRISG, ACCESS ;port G all outputs
+checkLED1 
+	movlw	.1
+	CPFSEQ 	player   ;check player, skips next line if player 1
+	goto	checkLED2
+	movlw 	0x01 	;should switch pin 1 of port G on
+	movwf	PORTG
+	goto	loop_pread
 
-;checkLED2	
-;	call 	lightLED
-;	movlw	.2
-;	CPFSEQ 	player
-;	goto	checkLED3 
-;	movlw 	0x02 	;should switch pin 2 of port G on
-;	movwf	PORTG
-;	goto	loop_pread
-;	
-;checkLED3	
-;	call 	lightLED
-;	movlw	.3
-;	CPFSEQ 	player
-;	goto	checkLED4 
-;	movlw 	0x03 	;should switch pin 2 of port G on
-;	movwf	PORTG
-;	goto	loop_pread
+checkLED2	
+	call 	lightLED
+	movlw	.2
+	CPFSEQ 	player
+	goto	checkLED3 
+	movlw 	0x02 	;should switch pin 2 of port G on
+	movwf	PORTG
+	goto	loop_pread
 	
-;checkLED4	
-;	call 	lightLED
-;	movlw	.4
-;	CPFSEQ 	player
-;	goto	checkLED1 ;this should loop back to LED 1 checking
-;	movlw 	0x04 	;should switch pin 4 of port G on
-;	movwf	PORTG
-;	goto	loop_pread
+checkLED3	
+	movlw	.3
+	CPFSEQ 	player
+	goto	checkLED4 
+	movlw 	0x03 	;should switch pin 2 of port G on
+	movwf	PORTG
+	goto	loop_pread
+	
+checkLED4	
+	movlw 	0x04 	;should switch pin 4 of port G on
+	movwf	PORTG
 	
 loop_pread ;loops until button on keypad is pressed goes to find_letter when button is pressed	
 	call	pad_read
