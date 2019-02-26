@@ -10,7 +10,7 @@ row	res 1 ;location to store row
 pad	code
 
 table
-	banksel .2
+	banksel 0x200
 	movlw	"A"
 	movwf	0x11, BANKED
 	
@@ -125,11 +125,8 @@ andcolrow
 	ANDWF	column, 1, 0 ;puts in column location
 	nop
 	movf	column, w
-	movwf	FSR1L
-	movlw	0x00
-	movwf	FSR1H
-	;lfsr	2, w
-	movlw	.1
+	lfsr	FSR1, 0x200
+	movf	PLUSW1, w
 	
 	;call	LCD_Write_Message
 	

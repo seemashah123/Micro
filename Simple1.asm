@@ -13,19 +13,22 @@ acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
 counter2    res 1   ; gives random number to select word from database of words
 delay_count res 1   ; reserve one byte for counter in the delay routine
-score	    res 4   ; scores of each of the four players
+
 player	    res 1   ; current player number
 letterPos   res 1   ; position in whole word currently at
+chosenletter res 1 ;keypad letter
 letter	    res 1   ; current letter in whole word being compared against
 word_len    res	1   ; length of the words in the database
 high_score  res 1   ; stores highest score any player has 
 current_score	res 1 ; stores current score which is being compared to high_score
+total_score	res 1
 
 tables	    udata 0x400    ; reserve data anywhere in RAM (here at 0x400)
 myArray	    res 0x80    ; reserve 128 bytes for welcome message data
 wordsList   res 0x80    ; reserve 128 bytes for list of words
 tables2	    udata 0x500    ; reserve data anywhere in RAM (here at 0x500)
 myArray2    res 0x80    ; reserve 128 bytes for hangman display data
+score	    res 4   ; scores of each of the four players
 ;chosenWord  res 0x80	; stores chosen word
 
 rst	code	0    ; reset vector
@@ -51,7 +54,8 @@ setup	bcf	EECON1, CFGS	; point to Flash program memory
 start 	
 	movlw	.2
 	movwf	word_len
-	
+	movlw	.0
+	movwf	total_score
 	movlw	.10
 	movwf	myTable_l
 	movlw	.1
@@ -155,6 +159,7 @@ delay	decfsz	delay_count	; decrement until zero
 	return
 
 find_letter ; length of word is 2 for now -> need to make this a constant but isn't working
+	movwf	chosenletter
 	movlw	.0
 	movwf	letterPos
 find_letter_loop	
@@ -174,8 +179,7 @@ find_letter_loop
 	;--
 	
  	movff	PLUSW0, letter ;gets the letter at position w in wordsList and puts in letter
-	banksel .2
-	movf	INDF1, w;FSR1 is loaded with address of entered letter so moves this to w
+	movf	chosenletter, w
 	CPFSEQ	letter  ;compares chosen letter with letter in word, skips if it is in word
 	goto	find_letter_loop
 	goto	found
@@ -186,17 +190,22 @@ found ; code if letter is in word ;joe
 	;need to add letter to myArray at position letterPos
 	call	LCD_clear
 	lfsr	FSR2, myArray
-	movf	letterPos-2, w
+	movlw	.1
+	subwf	letterPos, 0
 	movff	letter, PLUSW2
 	movlw	myTable_l-1
 	call	LCD_Write_Message
 	;--
 	movlw	.1
-	addwf	POSTINC2 ; adds 1 to current score
+	addwf	POSTINC2, 1 ; adds 1 to current score
+	addwf	total_score, 1
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	call	reset_to_player1
-	
+	movf	total_score, w
+	CPFSEQ	word_len
+	goto	lightLED
+	goto	endofgame
 	;check if all letters in word have been found
 notfound 
 	;code if letter isn't in word ;joe
@@ -226,13 +235,12 @@ endofgame
 	movwf	high_score
 	lfsr	FSR2, score
 highscore_loop	
-	movff	POSTINC2, current_score
+	movff	POSTINC2, current_score ;this doesn't work
 	movf	high_score, w
 	CPFSLT	current_score
 	movff	current_score, high_score
 	DECFSZ	counter
 	goto	highscore_loop
-	
 	lfsr	FSR2, score
 	movf	high_score, w
 	CPFSEQ	POSTINC2 ;skips if is high score
