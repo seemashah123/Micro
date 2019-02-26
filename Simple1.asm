@@ -18,6 +18,8 @@ player	    res 1   ;current player number
 letterPos   res 1   ;position in word currently at
 letter	    res 1   ;current letter in whole word being compared against
 word_len    res	1
+high_score  res 1 ;stores highest score any player has 
+current_score	res 1
 
 tables	    udata 0x400    ; reserve data anywhere in RAM (here at 0x400)
 myArray	    res 0x80    ; reserve 128 bytes for message data
@@ -206,6 +208,7 @@ notfound
 	lfsr	FSR2, score
 	;loop to LED lighting part ;seema
 	
+
 	
 ;loop_flashLED
 ;	lfsr	score, FSR2 ;load fsr2 iwth score
@@ -232,9 +235,25 @@ notfound
 ;	movwf 	PORTG
 ;	bra loop_flashLED ;dont know how to make this stop ?
 	
-endofgame ;seema
-;	CPFSLT 	score, 2
-;	goto 	loop_flashLED
+endofgame
+	movlw	.4
+	movwf	counter
+	movlw	.1
+	movwf	high_score
+	lfsr	score,FSR2
+highscore_loop	
+	movff	POSTINC2, current_score
+	movf	high_score, w
+	CPFSLT	current_score
+	movff	current_score, high_score
+	DECFSZ	counter
+	goto	highscore_loop
+	
+	
+	
+	
+	CPFSLT 	score, 2
+	goto 	loop_flashLED
 	
 	
 	;show which player wins and reset, flash LED of winning player
