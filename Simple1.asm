@@ -57,8 +57,6 @@ start
 	movlw	.1
 	movwf	player
 	lfsr	FSR2, score 
-	movlw	.0
-	movwf	letterPos
 		
 	; write my table to myArray
 	lfsr	FSR0, myArray	; Load FSR0 with address in RAM	
@@ -102,12 +100,15 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	pad_setup
 	call	fit
 	call	random
+	movf	word_len, w
+	mulwf	counter2
+	movff	PRODL,	counter2
 	nop
 	nop
 	call	LCD_Setup
 	nop
 	;call	LCD_clear
-	movlw	.10
+	movlw	.1000
 	call	LCD_delay_ms
 	nop
 	movlw	myTable_l-1	; output message to LCD (leave out "\n")
@@ -116,35 +117,30 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	nop
 lightLED ;seema
 	movlw	0x00
-	movwf	TRISG, ACCESS ;port G all outputs
+	movwf	TRISF, ACCESS ;port G all outputs
 checkLED1 
 	movlw	.1
 	CPFSEQ 	player   ;check player, skips next line if player 1
 	goto	checkLED2
-	movlw 	0x01 	;should switch pin 1 of port G on
-	movwf	PORTG
+	bsf	PORTF, 1
 	goto	loop_pread
 
 checkLED2	
-	call 	lightLED
 	movlw	.2
 	CPFSEQ 	player
 	goto	checkLED3 
-	movlw 	0x02 	;should switch pin 2 of port G on
-	movwf	PORTG
+	bsf	PORTF, 2
 	goto	loop_pread
 	
 checkLED3	
 	movlw	.3
 	CPFSEQ 	player
 	goto	checkLED4 
-	movlw 	0x03 	;should switch pin 2 of port G on
-	movwf	PORTG
+	bsf	PORTF, 3
 	goto	loop_pread
 	
 checkLED4	
-	movlw 	0x04 	;should switch pin 4 of port G on
-	movwf	PORTG
+	bsf	PORTF, 4
 	
 loop_pread ;loops until button on keypad is pressed goes to find_letter when button is pressed	
 	call	pad_read
@@ -159,6 +155,9 @@ delay	decfsz	delay_count	; decrement until zero
 	return
 
 find_letter ; length of word is 2 for now -> need to make this a constant but isn't working
+	movlw	.0
+	movwf	letterPos
+find_letter_loop	
 	movlw	.1
 	addwf	letterPos ;adds one to letterPos (initially 0)
 	movf	word_len, w
@@ -168,15 +167,17 @@ find_letter ; length of word is 2 for now -> need to make this a constant but is
 	lfsr	FSR0, wordsList ;moves address of wordsList to FSR0
 	
 	;add counter2 to letterPos and put in w
-	movlw	.0
+	movlw	.1
+	subwf	letterPos, 0
 	addwf	counter2, 0
-	addwf	letterPos-1, 0
+	;addwf	letterPos-1, 0
 	;--
 	
-	movff	PLUSW0, letter ;gets the letter at position w in wordsList and puts in letter
-	movf	INDF1, w ;FSR1 is loaded with address of entered letter so moves this to w
+ 	movff	PLUSW0, letter ;gets the letter at position w in wordsList and puts in letter
+	;banksel .2
+	movf	INDF1, w;FSR1 is loaded with address of entered letter so moves this to w
 	CPFSEQ	letter  ;compares chosen letter with letter in word, skips if it is in word
-	goto	find_letter
+	goto	find_letter_loop
 	goto	found
 	
 
@@ -202,20 +203,23 @@ notfound
 	;code to sound buzzer 
 	;---
 	movlw	.0
+	movwf	INDF1
 	addwf	POSTINC2 ; adds 0 to current score
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
-	call	reset_to_player1
+	goto	reset_to_player1
+	movlw	.1
+	addwf	player
 	goto	lightLED
 	;loop to LED lighting part ;seema
 reset_to_player1
 	lfsr	FSR2, score
 	movlw	.1
 	movwf	player
-	return
+	goto	lightLED
 endofgame
 	movlw	0x00
-	movwf	PORTG
+	movwf	PORTF
 	movlw	.4
 	movwf	counter
 	movlw	.1
@@ -233,18 +237,19 @@ highscore_loop
 	movf	high_score, w
 	CPFSEQ	POSTINC2 ;skips if is high score
 	goto	check_score2
-	bsf	PORTG, 0
+	bsf	PORTF, 1
 check_score2
 	CPFSEQ	POSTINC2
 	goto	check_score3
-	bsf	PORTG, 1
+	bsf	PORTF, 2
 check_score3
 	CPFSEQ	POSTINC2
 	goto	check_score4
-	bsf	PORTG, 2
+	bsf	PORTF, 3
 check_score4
 	CPFSEQ	POSTINC2
 	goto	check_score4
-	bsf	PORTG, 3	
+	bsf	PORTF, 4	
 	goto	setup
+	
 	end

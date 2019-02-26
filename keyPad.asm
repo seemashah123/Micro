@@ -76,12 +76,16 @@ pad_read
 	;FB73
 	movlw	0x0F ;sets columns as inputs (0-3)
 	movwf	TRISE, ACCESS
-	movlw   .1 ;delay
-	call	lcdlp2 ;delay
+	nop
+	nop
+	;movlw   .1 ;delay
+	;call	lcdlp2 ;delay
 	movlw	0xFF
 	movwf	PORTE
+
 	movlw   .1 ;delay
 	call	lcdlp2 ;delay
+	
 	movff	PORTE, column
 	
 	movlw	0xF0
@@ -95,8 +99,10 @@ pad_read
 readrow	
 	movlw	0xF0 ;sets rows as inputs
 	movwf	TRISE, ACCESS
-	movlw   .1 ;delay
-	call	lcdlp2 ;delay
+	nop
+	nop
+	;movlw   .1 ;delay
+	;call	lcdlp2 ;delay
 	movlw	0xFF
 	movwf	PORTE
 	movlw   .1
@@ -119,7 +125,6 @@ andcolrow
 	ANDWF	column, 1, 0 ;puts in column location
 	nop
 	movf	column, w
-	
 	movwf	FSR1L
 	movlw	0x00
 	movwf	FSR1H
