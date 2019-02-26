@@ -12,9 +12,7 @@
 ;    ;add code here to add one to counter and double it
 ;    bcf	    INTCON,RBIF ; clear interrupt flag
 ;    retfie  FAST ; fast return from interrupt
-
-
-    
+   
 wdata	code
 words	data	"ABCDEF"
 	constant words_l = .6

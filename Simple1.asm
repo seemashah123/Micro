@@ -11,22 +11,22 @@
 	
 acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
-counter2    res 1
+counter2    res 1   ; gives random number to select word from database of words
 delay_count res 1   ; reserve one byte for counter in the delay routine
-score	    res 4   ;scores of the four players
-player	    res 1   ;current player number
-letterPos   res 1   ;position in word currently at
-letter	    res 1   ;current letter in whole word being compared against
-word_len    res	1
-high_score  res 1 ;stores highest score any player has 
-current_score	res 1
+score	    res 4   ; scores of each of the four players
+player	    res 1   ; current player number
+letterPos   res 1   ; position in whole word currently at
+letter	    res 1   ; current letter in whole word being compared against
+word_len    res	1   ; length of the words in the database
+high_score  res 1   ; stores highest score any player has 
+current_score	res 1 ; stores current score which is being compared to high_score
 
 tables	    udata 0x400    ; reserve data anywhere in RAM (here at 0x400)
-myArray	    res 0x80    ; reserve 128 bytes for message data
-wordsList   res 0x80    ; reserve 128 bytes for message data
+myArray	    res 0x80    ; reserve 128 bytes for welcome message data
+wordsList   res 0x80    ; reserve 128 bytes for list of words
 tables2	    udata 0x500    ; reserve data anywhere in RAM (here at 0x500)
-myArray2    res 0x80    ; reserve 128 bytes for message data
-chosenWord  res 0x80
+myArray2    res 0x80    ; reserve 128 bytes for hangman display data
+;chosenWord  res 0x80	; stores chosen word
 
 rst	code	0    ; reset vector
 	goto	setup
@@ -194,7 +194,7 @@ found ; code if letter is in word ;joe
 	addwf	POSTINC2 ; adds 1 to current score
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
-	lfsr	FSR2, score
+	call	reset_to_player1
 	
 	;check if all letters in word have been found
 notfound 
@@ -205,36 +205,14 @@ notfound
 	addwf	POSTINC2 ; adds 0 to current score
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
-	lfsr	FSR2, score
+	call	reset_to_player1
+	goto	lightLED
 	;loop to LED lighting part ;seema
-	
-
-	
-;loop_flashLED
-;	lfsr	score, FSR2 ;load fsr2 iwth score
-;	CPFSEQ	POSTINC2 ;go through with postinc checking the score with compare
-;	movlw	.1
-;	CPFSGT	score
-;	goto	score_p2
-	;flashled of 1
-;	
-;	;at the end of flashing player 1 go toplay 2 regardless and so on
-;	;then go to flashled
-;
-;	;put in if statement thingy that says if e.g. the 'second' address of fsr2 has the highest score then the second pin lights?? and similar for all the 4 players
-;	
-;	CPFSEQ 	player ;dont know how to check which player won
-;	movlw 	____ ; underscore shows which pin needs to be turned on corresponding to which player has won
-;	movwf 	PORTG
-;	nop 
-;	nop ;use lcd_delay for delays, call it
-	
-;	nop
-;	nop
-;	movlw 	0x00
-;	movwf 	PORTG
-;	bra loop_flashLED ;dont know how to make this stop ?
-	
+reset_to_player1
+	lfsr	FSR2, score
+	movlw	.1
+	movwf	player
+	return
 endofgame
 	movlw	0x00
 	movwf	PORTG
@@ -269,8 +247,4 @@ check_score4
 	goto	check_score4
 	bsf	PORTG, 3	
 	goto	setup
-	
-	
-	;show which player wins and reset, flash LED of winning player
-	;check highest player 
 	end
