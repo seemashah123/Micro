@@ -174,7 +174,7 @@ find_letter_loop
 	;--
 	
  	movff	PLUSW0, letter ;gets the letter at position w in wordsList and puts in letter
-	;banksel .2
+	banksel .2
 	movf	INDF1, w;FSR1 is loaded with address of entered letter so moves this to w
 	CPFSEQ	letter  ;compares chosen letter with letter in word, skips if it is in word
 	goto	find_letter_loop
