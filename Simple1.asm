@@ -107,7 +107,7 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	LCD_Setup
 	nop
 	;call	LCD_clear
-	movlw	.100000
+	movlw	.10
 	call	LCD_delay_ms
 	nop
 	movlw	myTable_l-1	; output message to LCD (leave out "\n")
@@ -240,7 +240,7 @@ endofgame
 	movwf	counter
 	movlw	.1
 	movwf	high_score
-	lfsr	score,FSR2
+	lfsr	FSR2, score
 highscore_loop	
 	movff	POSTINC2, current_score
 	movf	high_score, w
@@ -249,11 +249,24 @@ highscore_loop
 	DECFSZ	counter
 	goto	highscore_loop
 	
-	
-	
-	
-	CPFSLT 	score, 2
-	goto 	loop_flashLED
+	lfsr	FSR2, score
+	movf	high_score, w
+	CPFSEQ	POSTINC2 ;skips if is high score
+	goto	check_score2
+	 ;flash LED1
+check_score2
+	CPFSEQ	POSTINC2
+	goto	check_score3
+	;flash LED2
+check_score3
+	CPFSEQ	POSTINC2
+	goto	check_score4
+	;flash LED3
+check_score4
+	CPFSEQ	POSTINC2
+	goto	check_score4
+	;flash LED4	
+	goto	setup
 	
 	
 	;show which player wins and reset, flash LED of winning player
