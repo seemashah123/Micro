@@ -236,6 +236,8 @@ notfound
 ;	bra loop_flashLED ;dont know how to make this stop ?
 	
 endofgame
+	movlw	0x00
+	movwf	PORTG
 	movlw	.4
 	movwf	counter
 	movlw	.1
@@ -253,19 +255,19 @@ highscore_loop
 	movf	high_score, w
 	CPFSEQ	POSTINC2 ;skips if is high score
 	goto	check_score2
-	 ;flash LED1
+	bsf	PORTG, 0
 check_score2
 	CPFSEQ	POSTINC2
 	goto	check_score3
-	;flash LED2
+	bsf	PORTG, 1
 check_score3
 	CPFSEQ	POSTINC2
 	goto	check_score4
-	;flash LED3
+	bsf	PORTG, 2
 check_score4
 	CPFSEQ	POSTINC2
 	goto	check_score4
-	;flash LED4	
+	bsf	PORTG, 3	
 	goto	setup
 	
 	
