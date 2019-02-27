@@ -13,6 +13,14 @@ acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
 counter2    res 1   ; gives random number to select word from database of words
 delay_count res 1   ; reserve one byte for counter in the delay routine
+;score	    res 4   ; scores of each of the four players
+fakeletter  res 1
+score1	    res	1
+score2	    res	1
+score3	    res	1
+score4	    res	1
+winLED	    res	1
+
 
 player	    res 1   ; current player number
 letterPos   res 1   ; position in whole word currently at
@@ -28,7 +36,7 @@ myArray	    res 0x80    ; reserve 128 bytes for welcome message data
 wordsList   res 0x80    ; reserve 128 bytes for list of words
 tables2	    udata 0x500    ; reserve data anywhere in RAM (here at 0x500)
 myArray2    res 0x80    ; reserve 128 bytes for hangman display data
-score	    res 4   ; scores of each of the four players
+
 ;chosenWord  res 0x80	; stores chosen word
 
 rst	code	0    ; reset vector
@@ -52,15 +60,24 @@ setup	bcf	EECON1, CFGS	; point to Flash program memory
 	
 	; ******* Main programme ****************************************
 start 	
+	;movlw	0x00
+	;movwf	score
+	movlw	0x00
+	movwf	winLED
+	movlw	"&"
+	movwf	fakeletter
 	movlw	.2
 	movwf	word_len
 	movlw	.0
 	movwf	total_score
-	movlw	.10
-	movwf	myTable_l
 	movlw	.1
 	movwf	player
-	lfsr	FSR2, score 
+	movlw	.0
+	movwf	score1
+	movwf	score2
+	movwf	score3
+	movwf	score4
+	 
 		
 	; write my table to myArray
 	lfsr	FSR0, myArray	; Load FSR0 with address in RAM	
@@ -118,6 +135,8 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	movlw	myTable_l-1	; output message to LCD (leave out "\n")
 	lfsr	FSR2, myArray
 	call	LCD_Write_Message
+	nop
+	;lfsr	FSR0, score
 	nop
 lightLED ;seema
 	movlw	0x00
@@ -196,9 +215,39 @@ found ; code if letter is in word ;joe
 	movlw	myTable_l-1
 	call	LCD_Write_Message
 	;--
+	;change stored letter
+	movf	column, w
+	lfsr	FSR1, 0x200
+	movff	fakeletter, PLUSW1
+	;--
 	movlw	.1
-	addwf	POSTINC2, 1 ; adds 1 to current score
+	;addwf	POSTINC0, 1 ; adds 1 to current score
 	addwf	total_score, 1
+check_score1	
+	movlw	0x01
+	CPFSEQ	player
+	goto	check_score2
+	addwf	score1
+	goto	increment	
+check_score2
+	movlw	0x02
+	CPFSEQ	player
+	goto	check_score3
+	movlw	.1
+	addwf	score2
+	goto increment
+check_score3
+	movlw	0x03
+	CPFSEQ	player
+	goto	check_score4
+	movlw	.1
+	addwf	score3
+	goto	increment
+check_score4
+	movlw	.1
+	addwf	score4
+	
+increment
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	call	reset_to_player1
@@ -212,8 +261,8 @@ notfound
 	;code to sound buzzer 
 	;---
 	movlw	.0
-	movwf	INDF1
-	addwf	POSTINC2 ; adds 0 to current score
+	;movwf	INDF1
+	addwf	POSTINC0 ; adds 0 to current score
 	movlw	.4
 	CPFSLT	player ; skips if f < 4
 	goto	reset_to_player1
@@ -222,7 +271,7 @@ notfound
 	goto	lightLED
 	;loop to LED lighting part ;seema
 reset_to_player1
-	lfsr	FSR2, score
+	;lfsr	FSR0, score
 	movlw	.1
 	movwf	player
 	goto	lightLED
@@ -233,31 +282,80 @@ endofgame
 	movwf	counter
 	movlw	.1
 	movwf	high_score
-	lfsr	FSR2, score
+	;lfsr	FSR2, score
 highscore_loop	
-	movff	POSTINC2, current_score ;this doesn't work
-	movf	high_score, w
-	CPFSLT	current_score
-	movff	current_score, high_score
-	DECFSZ	counter
-	goto	highscore_loop
-	lfsr	FSR2, score
-	movf	high_score, w
-	CPFSEQ	POSTINC2 ;skips if is high score
-	goto	check_score2
-	bsf	PORTF, 1
-check_score2
-	CPFSEQ	POSTINC2
-	goto	check_score3
-	bsf	PORTF, 2
-check_score3
-	CPFSEQ	POSTINC2
-	goto	check_score4
-	bsf	PORTF, 3
-check_score4
-	CPFSEQ	POSTINC2
-	goto	check_score4
-	bsf	PORTF, 4	
-	goto	setup
+	;movff	POSTINC2, current_score ;this doesn't work
+	;movf	high_score, w
+	
+	;gets the high score:
+	movf	score1, w
+	CPFSGT	high_score
+	movff	score1, high_score
+	movf	score2, w
+	CPFSGT	high_score
+	movff	score2, high_score
+	movf	score3, w
+	CPFSGT	high_score
+	movff	score3, high_score
+	movf	score4, w
+	CPFSGT	high_score
+	movff	score4, high_score
+	
+	;lights LED if score is high score:
+	
+	movf	score1, w
+	CPFSEQ	high_score
+	goto	check_win2
+	movlw	0x01
+	XORWF	winLED, 1
+	
+	;bsf	PORTF, 1
+check_win2
+	movf	score2, w
+	CPFSEQ	high_score
+	goto	check_win3
+	movlw	0x02
+	XORWF	winLED, 1
+check_win3
+	movf	score3, w
+	CPFSEQ	high_score
+	goto	check_win4
+	movlw	0x03
+	XORWF	winLED, 1
+check_win4
+	movf	score4, w
+	CPFSEQ	high_score
+	goto	lightwin
+	movlw	0x04
+	XORWF	winLED, 1
+lightwin
+	movff	winLED, PORTF
+	nop
+	
+	goto	start
+	
+	
+	
+	
+;	DECFSZ	counter
+;	goto	highscore_loop
+;	lfsr	FSR2, score
+;	movf	high_score, w
+;	CPFSEQ	POSTINC2 ;skips if is high score
+;	goto	check_score2
+;	bsf	PORTF, 1
+;check_score2
+;	CPFSEQ	POSTINC2
+;	goto	check_score3
+;	bsf	PORTF, 2
+;check_score3
+;	CPFSEQ	POSTINC2
+;	goto	check_score4
+;	bsf	PORTF, 3
+;check_score4
+;	CPFSEQ	POSTINC2
+;	goto	check_score4
+;	bsf	PORTF, 4	
+;	goto	setup
 	
 	end

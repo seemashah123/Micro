@@ -54,50 +54,5 @@ setcounter ;sets counter to 2
 	end	
 	
 	
-	
-	;----checks if button is pressed, breaks loops if it is
-	;movlw	0xFF
-	;movwf	TRISC, ACCESS ; makes all pins on C inputs
-	;nop
-	;nop
-	;BTFSS	PORTC, 1 ;skips next instruction if button pressed
-	;goto	randomloop
-	;----		
-	
-	
-	
-;writeword
-;	movf    counter2, w
-;	mullw   2 ; multiplies counter in w by 2
-;	movwf   counter2 ; moves new counter (double) back to counter
-;	movlw   words_l+counter2
-;	lfsr    FSR2, chosenWord
-;	movlw   .2
-;	call    LCD_Write_Message
-;	return
-	
-;words
-	;banksel .2
-	;lfsr	FSR0, 0x000, BANKED
-	;movlw	"I"
-	;clrf	POSTINC0, f
-	;movlw	"N"
-	;clrf	POSTINC0, f
-	
-	;lfsr	FSR0, 0x010, BANKED
-	;movlw	"A"
-	;clrf	POSTINC0, f
-	;movlw	"T"
-	;clrf	POSTINC0, f
-	
-	;lfsr	FSR0, 0x020, BANKED
-	;movlw	"B"
-	;clrf	POSTINC0, f
-	;movlw	"E"
-	;clrf	POSTINC0, f
-;
 
 	
-	
-	
-
