@@ -14,8 +14,8 @@
 ;    retfie  FAST ; fast return from interrupt
    
 wdata	code
-words	data	"ABCDEF"
-	constant words_l = .6
+words	data	"FAMENOPEBEANFILEDEALCAKEMALE"
+	constant words_l = .28
 
 cwords	code
 
@@ -38,7 +38,7 @@ random
 	movf PORTB, W
 	nop
 	bcf INTCON,RBIF ; clear RBIF 
-	movlw	.2
+	movlw	.6
 	movwf	counter2
 randomloop
 	btfsc	INTCON, RBIF
@@ -47,7 +47,7 @@ randomloop
 	goto randomloop	
 	
 setcounter ;sets counter to 2
-	movlw	.2
+	movlw	.6
 	movwf	counter2
  	goto	randomloop
 	

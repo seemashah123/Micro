@@ -47,7 +47,7 @@ table
 	movlw	"L"
 	movwf	0x48, BANKED
 	
-	movlw	"M"
+	movlw	"W"
 	movwf	0x81, BANKED
 	
 	movlw	"N"

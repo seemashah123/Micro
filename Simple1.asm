@@ -44,8 +44,8 @@ rst	code	0    ; reset vector
 
 pdata	code    ; a section of programme memory for storing data
 	; ******* myTable, data in programme memory, and its length *****
-myTable data	    "__\n"	; message, plus carriage return
-	constant    myTable_l=.3	; length of data
+myTable data	    "____\n"	; message, plus carriage return
+	constant    myTable_l=.5	; length of data
 myTable2 data	    "Press RB5\n"	; message, plus carriage return
 	constant    myTable2_l=.10	; length of data	
 
@@ -66,7 +66,7 @@ start
 	movwf	winLED
 	movlw	"&"
 	movwf	fakeletter
-	movlw	.2
+	movlw	.4
 	movwf	word_len
 	movlw	.0
 	movwf	total_score
@@ -306,7 +306,7 @@ highscore_loop
 	movf	score1, w
 	CPFSEQ	high_score
 	goto	check_win2
-	movlw	0x01
+	movlw	0x02
 	XORWF	winLED, 1
 	
 	;bsf	PORTF, 1
@@ -314,19 +314,19 @@ check_win2
 	movf	score2, w
 	CPFSEQ	high_score
 	goto	check_win3
-	movlw	0x02
+	movlw	0x04
 	XORWF	winLED, 1
 check_win3
 	movf	score3, w
 	CPFSEQ	high_score
 	goto	check_win4
-	movlw	0x03
+	movlw	0x08
 	XORWF	winLED, 1
 check_win4
 	movf	score4, w
 	CPFSEQ	high_score
 	goto	lightwin
-	movlw	0x04
+	movlw	0x10
 	XORWF	winLED, 1
 lightwin
 	movff	winLED, PORTF
