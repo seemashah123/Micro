@@ -331,6 +331,13 @@ check_win4
 lightwin
 	movff	winLED, PORTF
 	nop
+	;call 	LCD_delay_ms		    ; delay given in ms in W
+	;movwf	LCD_cnt_ms
+;flash2	movlw	.500	    ; 2 ms delay
+	;call	LCD_delay_x4us	
+	;decfsz	LCD_cnt_ms
+	;bra	flash2
+	;return
 	
 	goto	start
 	
