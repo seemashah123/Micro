@@ -47,7 +47,7 @@ table
 	movlw	"L"
 	movwf	0x48, BANKED
 	
-	movlw	"W"
+	movlw	"M" ;this said W before, not sure if this was the thing causing problems, probably wasnt but changed to M anyway 
 	movwf	0x81, BANKED
 	
 	movlw	"N"
