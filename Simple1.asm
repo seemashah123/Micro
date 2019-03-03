@@ -177,7 +177,7 @@ delay	decfsz	delay_count	; decrement until zero
 	bra delay
 	return
 
-find_letter ; length of word is 2 for now -> need to make this a constant but isn't working
+find_letter 
 	movwf	chosenletter
 	movlw	.0
 	movwf	letterPos
@@ -204,7 +204,7 @@ find_letter_loop
 	goto	found
 	
 
-found ; code if letter is in word ;joe
+found ; code if letter is in word
 	; goto code to add letter to display
 	;need to add letter to myArray at position letterPos
 	call	LCD_clear
@@ -257,7 +257,7 @@ increment
 	goto	endofgame
 	;check if all letters in word have been found
 notfound 
-	;code if letter isn't in word ;joe
+	;code if letter isn't in word
 	;code to sound buzzer 
 	;---
 	movlw	.0
@@ -269,7 +269,7 @@ notfound
 	movlw	.1
 	addwf	player
 	goto	lightLED
-	;loop to LED lighting part ;seema
+	;loop to LED lighting part 
 reset_to_player1
 	;lfsr	FSR0, score
 	movlw	.1
@@ -284,7 +284,7 @@ endofgame
 	movwf	high_score
 	;lfsr	FSR2, score
 highscore_loop	
-	;movff	POSTINC2, current_score ;this doesn't work
+	;movff	POSTINC2, current_score ;unsure
 	;movf	high_score, w
 	
 	;gets the high score:
