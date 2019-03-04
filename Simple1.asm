@@ -93,9 +93,8 @@ loop 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	movff	TABLAT, POSTINC0; move data from TABLAT to (FSR0), inc FSR0	
 	decfsz	counter		; count down to zero
 	bra	loop		; keep going until finished
-	;----------
 	
-		; write my table2 to myArray2
+	; write my table2 to myArray2
 	lfsr	FSR0, myArray2	; Load FSR0 with address in RAM	
 	movlw	upper(myTable2)	; address of data in PM
 	movwf	TBLPTRU		; load upper bits to TBLPTRU
@@ -109,7 +108,7 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	movff	TABLAT, POSTINC0; move data from TABLAT to (FSR0), inc FSR0	
 	decfsz	counter		; count down to zero
 	bra	loop2		; keep going until finished
-	;----------
+	;--------------
 	;writes myArray to LCD
 	call	LCD_clear
 	movlw	myTable2_l-1	; output message to LCD (leave out "\n")
@@ -117,7 +116,6 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	call	LCD_Write_Message
 	;--------------
 		
-	;call	LCD_nextline
 	call	pad_setup
 	call	fit
 	call	random
@@ -128,7 +126,6 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	nop
 	call	LCD_Setup
 	nop
-	;call	LCD_clear
 	movlw	.1000
 	call	LCD_delay_ms
 	nop
@@ -136,7 +133,6 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	lfsr	FSR2, myArray
 	call	LCD_Write_Message
 	nop
-	;lfsr	FSR0, score
 	nop
 lightLED
 	movlw	0x00
@@ -172,7 +168,7 @@ loop_pread ;loops until button on keypad is pressed goes to find_letter when but
 	goto	loop_pread  ; goto current line in code
 
 
-	; a delay subroutine if you need one, times around loop in delay_count
+; a delay subroutine if you need one, times around loop in delay_count
 delay	decfsz	delay_count	; decrement until zero
 	bra delay
 	return
