@@ -59,8 +59,6 @@ setup	bcf	EECON1, CFGS	; point to Flash program memory
 	
 	; ******* Main programme ****************************************
 start 	
-	;movlw	0x00
-	;movwf	score
 	movlw	0x00
 	movwf	winLED
 	movlw	"&"
@@ -216,14 +214,15 @@ found ; code if letter is in word
 	movff	fakeletter, PLUSW1
 	;--
 	movlw	.1
-	;addwf	POSTINC0, 1 ; adds 1 to current score
 	addwf	total_score, 1
+
 check_score1	
 	movlw	0x01
 	CPFSEQ	player
 	goto	check_score2
 	addwf	score1
 	goto	increment	
+
 check_score2
 	movlw	0x02
 	CPFSEQ	player
@@ -231,6 +230,7 @@ check_score2
 	movlw	.1
 	addwf	score2
 	goto increment
+
 check_score3
 	movlw	0x03
 	CPFSEQ	player
@@ -238,6 +238,7 @@ check_score3
 	movlw	.1
 	addwf	score3
 	goto	increment
+
 check_score4
 	movlw	.1
 	addwf	score4
@@ -268,6 +269,7 @@ reset_to_player1
 	movlw	.1
 	movwf	player
 	goto	lightLED
+
 endofgame
 	movlw	0x00
 	movwf	PORTF
@@ -276,8 +278,8 @@ endofgame
 	movlw	.1
 	movwf	high_score
 	;lfsr	FSR2, score
+
 highscore_loop	
-	
 	;gets the high score:
 	movf	score1, w
 	CPFSGT	high_score
@@ -300,7 +302,6 @@ highscore_loop
 	movlw	0x02
 	XORWF	winLED, 1
 	
-	;bsf	PORTF, 1
 
 check_win2
 	movf	score2, w
@@ -337,28 +338,5 @@ lightwin
 	
 	goto	start
 	
-	
-	
-	
-;	DECFSZ	counter ;CAN WE REMOVE THIS
-;	goto	highscore_loop
-;	lfsr	FSR2, score
-;	movf	high_score, w
-;	CPFSEQ	POSTINC2 ;skips if is high score
-;	goto	check_score2
-;	bsf	PORTF, 1
-;check_score2
-;	CPFSEQ	POSTINC2
-;	goto	check_score3
-;	bsf	PORTF, 2
-;check_score3
-;	CPFSEQ	POSTINC2
-;	goto	check_score4
-;	bsf	PORTF, 3
-;check_score4
-;	CPFSEQ	POSTINC2
-;	goto	check_score4
-;	bsf	PORTF, 4	
-;	goto	setup
 	
 	end
