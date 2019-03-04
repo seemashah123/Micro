@@ -128,11 +128,6 @@ andcolrow
 	lfsr	FSR1, 0x200
 	movf	PLUSW1, w
 	
-	;call	LCD_Write_Message
-	
-	
-	;have changed every port H to port E
-	
 	return
 
     end
