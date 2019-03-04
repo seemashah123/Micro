@@ -258,8 +258,6 @@ increment
 	;check if all letters in word have been found
 notfound 
 	;code if letter isn't in word
-	;code to sound buzzer 
-	;---
 	movlw	.0
 	;movwf	INDF1
 	addwf	POSTINC0 ; adds 0 to current score
