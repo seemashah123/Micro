@@ -24,7 +24,7 @@ winLED	    res	1
 
 player	    res 1   ; current player number
 letterPos   res 1   ; position in whole word currently at
-chosenletter res 1 ;keypad letter
+chosenletter res 1  ;keypad letter
 letter	    res 1   ; current letter in whole word being compared against
 word_len    res	1   ; length of the words in the database
 high_score  res 1   ; stores highest score any player has 
@@ -138,9 +138,9 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	nop
 	;lfsr	FSR0, score
 	nop
-lightLED ;seema
+lightLED
 	movlw	0x00
-	movwf	TRISF, ACCESS ;port G all outputs
+	movwf	TRISF, ACCESS ;port F all outputs
 checkLED1 
 	movlw	.1
 	CPFSEQ 	player   ;check player, skips next line if player 1
@@ -282,8 +282,6 @@ endofgame
 	movwf	high_score
 	;lfsr	FSR2, score
 highscore_loop	
-	;movff	POSTINC2, current_score ;unsure
-	;movf	high_score, w
 	
 	;gets the high score:
 	movf	score1, w
@@ -308,30 +306,35 @@ highscore_loop
 	XORWF	winLED, 1
 	
 	;bsf	PORTF, 1
+
 check_win2
 	movf	score2, w
 	CPFSEQ	high_score
 	goto	check_win3
 	movlw	0x04
 	XORWF	winLED, 1
+
 check_win3
 	movf	score3, w
 	CPFSEQ	high_score
 	goto	check_win4
 	movlw	0x08
 	XORWF	winLED, 1
+
 check_win4
 	movf	score4, w
 	CPFSEQ	high_score
 	goto	lightwin
 	movlw	0x10
 	XORWF	winLED, 1
+
 lightwin
 	movff	winLED, PORTF
 	nop
 	;call 	LCD_delay_ms		    ; delay given in ms in W
 	;movwf	LCD_cnt_ms
-;flash2	movlw	.500	    ; 2 ms delay
+
+;flash2	movlw	.500	    ; 2 ms delay ;FLASHING SEQUENCE
 	;call	LCD_delay_x4us	
 	;decfsz	LCD_cnt_ms
 	;bra	flash2
@@ -342,7 +345,7 @@ lightwin
 	
 	
 	
-;	DECFSZ	counter
+;	DECFSZ	counter ;CAN WE REMOVE THIS
 ;	goto	highscore_loop
 ;	lfsr	FSR2, score
 ;	movf	high_score, w
