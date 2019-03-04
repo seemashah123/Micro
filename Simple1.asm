@@ -13,7 +13,6 @@ acs0	udata_acs   ; reserve data space in access ram
 counter	    res 1   ; reserve one byte for a counter variable
 counter2    res 1   ; gives random number to select word from database of words
 delay_count res 1   ; reserve one byte for counter in the delay routine
-;score	    res 4   ; scores of each of the four players
 fakeletter  res 1
 score1	    res	1
 score2	    res	1
