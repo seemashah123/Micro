@@ -47,7 +47,7 @@ table
 	movlw	"L"
 	movwf	0x48, BANKED
 	
-	movlw	"M" ;this said W before, not sure if this was the thing causing problems, probably wasnt but changed to M anyway 
+	movlw	"M" 
 	movwf	0x81, BANKED
 	
 	movlw	"N"
@@ -60,10 +60,10 @@ table
 	movwf	0x88, BANKED
 	return
 	
-	;keep inputting letters and their addresses into table??
+	;keep inputting letters and their addresses into table
 	
 pad_setup
-	banksel .15 ;found this 15 using the data sheet, to find which 'file register' it is in?
+	banksel .15 
 	bsf	PADCFG1,REPU,BANKED
 	clrf	LATE
 	call	table
@@ -78,8 +78,6 @@ pad_read
 	movwf	TRISE, ACCESS
 	nop
 	nop
-	;movlw   .1 ;delay
-	;call	lcdlp2 ;delay
 	movlw	0xFF
 	movwf	PORTE
 
@@ -115,11 +113,7 @@ readrow
 	movlw	0x00
 	movwf	column
 	return
-	;movf	column, w
-	;andwf	row,w
-	;movwf	FSR2L
-	;movlw	.2
-	;movwf	FSR2H
+	
 andcolrow	
 	movf	row, w
 	ANDWF	column, 1, 0 ;puts in column location
